@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sabemi-postgres
+
+    environment:
+      POSTGRES_DB: sabemi_tec
+      POSTGRES_USER: sabemi
+      POSTGRES_PASSWORD: sabemi-tec123
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - sabemi_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  sabemi_postgres_data:
