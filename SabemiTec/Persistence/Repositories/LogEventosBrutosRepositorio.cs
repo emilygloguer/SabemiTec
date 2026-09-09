@@ -4,25 +4,29 @@ using SabemiTec.Entities;
 
 namespace SabemiTec.Persistence.Repositories;
 
-public class LogEventosBrutosRepositorio(AppDbContext dbContext) : ILogEventosBrutosRepositorio
+public class LogEventosBrutosRepositorio(
+    AppDbContext dbContext) : ILogEventosBrutosRepositorio
 {
     public async Task<LogEventosBrutos> PersistirAsync(
         LogEventosBrutos registro,
         CancellationToken cancellationToken = default)
     {
-        LogEventosBrutos? registroExistente = await dbContext.LogsEventosBrutos
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                log => log.TransacaoId == registro.TransacaoId,
-                cancellationToken);
+        if (!string.IsNullOrWhiteSpace(registro.TransacaoId))
+        {
+            bool transacaoExistente = await dbContext.LogsEventosBrutos
+                    .AsNoTracking()
+                    .AnyAsync(
+                        log => log.TransacaoId == registro.TransacaoId,
+                        cancellationToken);
 
-        if (registroExistente is not null)
-            throw new InvalidOperationException(
-                $"Já existe um registro para a transação {registro.TransacaoId}.");
+            if (transacaoExistente)
+                throw new InvalidOperationException(
+                    $"Já existe um registro para a transação {registro.TransacaoId}.");
+        }
 
         dbContext.LogsEventosBrutos.Add(registro);
-        await dbContext.SaveChangesAsync(cancellationToken);
 
+        await dbContext.SaveChangesAsync(cancellationToken);
         return registro;
     }
 
@@ -30,10 +34,19 @@ public class LogEventosBrutosRepositorio(AppDbContext dbContext) : ILogEventosBr
         CancellationToken cancellationToken = default)
     {
         return await dbContext.LogsEventosBrutos
-            .Include(log => log.StatusDoContrato)
             .Where(log => log.StatusProcessamento == StatusProcessamento.Pendente)
             .OrderBy(log => log.DataRecebimento)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<StatusDoContrato?> ObterStatusDoContratoAsync(
+        string contratoId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.StatusDosContratos
+            .FirstOrDefaultAsync(
+                status => status.ContratoId == contratoId,
+                cancellationToken);
     }
 
     public async Task AtualizarProcessamentoEmLoteAsync(
@@ -41,8 +54,8 @@ public class LogEventosBrutosRepositorio(AppDbContext dbContext) : ILogEventosBr
         IReadOnlyList<StatusDoContrato> statusDosContratos,
         CancellationToken cancellationToken = default)
     {
-        await using IDbContextTransaction transacao =
-            await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await using IDbContextTransaction transacao = await dbContext.Database
+                .BeginTransactionAsync(cancellationToken);
 
         try
         {
@@ -54,26 +67,35 @@ public class LogEventosBrutosRepositorio(AppDbContext dbContext) : ILogEventosBr
         }
         catch
         {
-            await transacao.RollbackAsync(CancellationToken.None);
+            await transacao.RollbackAsync(
+                CancellationToken.None);
+
             throw;
         }
     }
 
-    private void MarcarLogsParaAtualizacao(IReadOnlyList<LogEventosBrutos> registros)
+    private void MarcarLogsParaAtualizacao(
+        IReadOnlyList<LogEventosBrutos> registros)
     {
         foreach (LogEventosBrutos registro in registros)
         {
-            dbContext.Entry(registro).Property(log => log.StatusProcessamento).IsModified = true;
-            dbContext.Entry(registro).Property(log => log.MensagemErro).IsModified = true;
+            dbContext.Entry(registro)
+                .Property(log => log.StatusProcessamento)
+                .IsModified = true;
+
+            dbContext.Entry(registro)
+                .Property(log => log.MensagemErro)
+                .IsModified = true;
         }
     }
 
-    private void AdicionarStatusDosContratosNovos(IReadOnlyList<StatusDoContrato> statusDosContratos)
+    private void AdicionarStatusDosContratosNovos(
+        IReadOnlyList<StatusDoContrato> statusDosContratos)
     {
-        foreach (StatusDoContrato statusDoContrato in statusDosContratos)
+        foreach (StatusDoContrato status in statusDosContratos)
         {
-            if (dbContext.Entry(statusDoContrato).State == EntityState.Detached)
-                dbContext.StatusDosContratos.Add(statusDoContrato);
+            if (dbContext.Entry(status).State == EntityState.Detached)
+                dbContext.StatusDosContratos.Add(status);
         }
     }
 }

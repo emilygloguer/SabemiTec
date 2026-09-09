@@ -25,6 +25,18 @@ public class WebhookProcessamentoService(ILogEventosBrutosRepositorio repositori
 
                 registro.StatusProcessamento = StatusProcessamento.Sucesso;
                 registro.MensagemErro = null;
+
+                if (string.IsNullOrWhiteSpace(registro.ContratoId))
+                    throw new InvalidOperationException("Contrato não informado.");
+
+                StatusDoContrato? statusExistente = await repositorio.ObterStatusDoContratoAsync(
+                    registro.ContratoId,
+                    cancellationToken);
+
+                StatusDoContrato statusContrato = registro.CriarOuAtualizarStatusDoContrato(statusExistente);
+
+                statusDosContratos[statusContrato.ContratoId] = statusContrato;
+
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -35,9 +47,6 @@ public class WebhookProcessamentoService(ILogEventosBrutosRepositorio repositori
                 registro.StatusProcessamento = StatusProcessamento.Erro;
                 registro.MensagemErro = ex.Message;
             }
-
-            StatusDoContrato statusDoContrato = registro.CriarStatusDoContrato();
-            statusDosContratos[statusDoContrato.ContratoId] = statusDoContrato;
         }
 
         await repositorio.AtualizarProcessamentoEmLoteAsync(

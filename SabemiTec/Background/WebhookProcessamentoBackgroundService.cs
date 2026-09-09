@@ -6,7 +6,7 @@ public class WebhookProcessamentoBackgroundService(
     IServiceScopeFactory serviceScopeFactory,
     ILogger<WebhookProcessamentoBackgroundService> logger) : BackgroundService
 {
-    private static readonly TimeSpan IntervaloProcessamento = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan IntervaloProcessamento = TimeSpan.FromSeconds(5);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

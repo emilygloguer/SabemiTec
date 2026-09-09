@@ -5,15 +5,15 @@ using SabemiTec.Services;
 namespace SabemiTec.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("webhooks")]
 public class WebhookController(IWebhookService webhookService) : ControllerBase
 {
-    [HttpPost("webhooks/pagamentos")]
+    [HttpPost("pagamentos")]
     public async Task<IActionResult> PersistirWebhook([FromBody] PaymentWebhookRequest payload)
     {
         try
         {
-            return Ok(await webhookService.PersistirWebhook(payload));
+            return Accepted(await webhookService.PersistirWebhook(payload));
         }
         catch (ArgumentException ex)
         {
@@ -29,11 +29,7 @@ public class WebhookController(IWebhookService webhookService) : ControllerBase
         }
     }
 
+    //apikey
     //listar pagamentos paginado
-    //filtrar 
-
-
-
-
-
+    //endpoint de busca com filtragem
 }

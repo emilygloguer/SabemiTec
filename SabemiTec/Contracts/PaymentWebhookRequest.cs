@@ -1,8 +1,19 @@
-﻿namespace SabemiTec.Contracts;
+﻿using System.Text.Json.Serialization;
+
+namespace SabemiTec.Contracts;
 
 public record PaymentWebhookRequest(
-    string IdTransacao,
-    string IdContrato,
-    decimal Valor,
-    DateTime DataPagamento,
-    string Status);
+    [property: JsonPropertyName("id_transacao")]
+    string? IdTransacao,
+
+    [property: JsonPropertyName("id_contrato")]
+    string? IdContrato,
+
+    [property: JsonPropertyName("valor")]
+    decimal? Valor,
+
+    [property: JsonPropertyName("data_pagamento")]
+    DateTime? DataPagamento,
+
+    [property: JsonPropertyName("status")]
+    string? Status);
