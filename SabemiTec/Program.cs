@@ -1,9 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using SabemiTec.Background;
 using SabemiTec.Persistence;
+using SabemiTec.Persistence.Repositories;
+using SabemiTec.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ILogEventosBrutosRepositorio, LogEventosBrutosRepositorio>();
+builder.Services.AddScoped<IWebhookService, WebhookService>();
+builder.Services.AddScoped<IWebhookProcessamentoService, WebhookProcessamentoService>();
+builder.Services.AddHostedService<WebhookProcessamentoBackgroundService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -12,13 +21,6 @@ var connectionString =
     ?? throw new InvalidOperationException(
         "DefaultConnection não configurada");
 
-var connectionBuilder = new Npgsql.NpgsqlConnectionStringBuilder(connectionString);
-
-Console.WriteLine($"Host: {connectionBuilder.Host}");
-Console.WriteLine($"Port: {connectionBuilder.Port}");
-Console.WriteLine($"Database: {connectionBuilder.Database}");
-Console.WriteLine($"Username: {connectionBuilder.Username}");
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
@@ -26,7 +28,7 @@ WebApplication app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext =
+    AppDbContext dbContext =
         scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     try
