@@ -3,4 +3,5 @@
     <File Path="docker-compose.yml" />
   </Folder>
   <Project Path="SabemiTec/SabemiTec.csproj" />
+  <Project Path="tests/SabemiTec.Tests/SabemiTec.Tests.csproj" />
 </Solution>

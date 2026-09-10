@@ -39,6 +39,15 @@ public class LogEventosBrutosRepositorio(
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<LogEventosBrutos>> ObterPagamentosAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.LogsEventosBrutos
+            .AsNoTracking()
+            .OrderByDescending(log => log.DataRecebimento)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<StatusDoContrato?> ObterStatusDoContratoAsync(
         string contratoId,
         CancellationToken cancellationToken = default)

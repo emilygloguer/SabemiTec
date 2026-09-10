@@ -29,7 +29,19 @@ public class WebhookController(IWebhookService webhookService) : ControllerBase
         }
     }
 
+    [HttpGet("pagamentos")]
+    public async Task<IActionResult> ListarPagamentos(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await webhookService.ObterPagamentosAsync(cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro ao listar os pagamentos.", error = ex.Message });
+        }
+    }
+
     //apikey
-    //listar pagamentos paginado
     //endpoint de busca com filtragem
 }

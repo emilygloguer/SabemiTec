@@ -11,7 +11,7 @@ public class WebhookService(ILogEventosBrutosRepositorio repositorio) : IWebhook
         ArgumentNullException.ThrowIfNull(payload);
 
         LogEventosBrutos novoRegistro = payload.ConverterParaLogEventosBrutos();
-        List<string> erros = ValidarPayload(payload);
+        List<string> erros = ValidarPayload(novoRegistro);
 
         if (erros.Count > 0)
         {
@@ -24,27 +24,35 @@ public class WebhookService(ILogEventosBrutosRepositorio repositorio) : IWebhook
         return registroPersistido.Resumo();
     }
 
-    private static List<string> ValidarPayload(PaymentWebhookRequest payload)
+    public async Task<IReadOnlyList<LogEventoBrutoResponse>> ObterPagamentosAsync(
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<LogEventosBrutos> registros =
+            await repositorio.ObterPagamentosAsync(cancellationToken);
+
+        return [.. registros.Select(registro => registro.Resumo())];
+    }
+
+    private static List<string> ValidarPayload(LogEventosBrutos registro)
     {
         List<string> erros = [];
 
-        if (string.IsNullOrWhiteSpace(payload.IdTransacao))
+        if (string.IsNullOrWhiteSpace(registro.TransacaoId))
             erros.Add("IdTransacao é obrigatório.");
 
-        if (string.IsNullOrWhiteSpace(payload.IdContrato))
+        if (string.IsNullOrWhiteSpace(registro.ContratoId))
             erros.Add("IdContrato é obrigatório.");
 
-        if (payload.Valor is null)
-            erros.Add("Valor é obrigatório.");
-        else if (payload.Valor <= 0)
+        if (registro.Valor <= 0)
             erros.Add("Valor deve ser maior que zero.");
 
-        if (payload.DataPagamento is null)
+        if (registro.DataPagamento == DateTime.MinValue)
             erros.Add("DataPagamento é obrigatória.");
 
-        if (string.IsNullOrWhiteSpace(payload.Status))
+        if (string.IsNullOrWhiteSpace(registro.StatusRecebido))
             erros.Add("Status é obrigatório.");
 
         return erros;
     }
+
 }
