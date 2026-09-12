@@ -33,6 +33,17 @@ public class WebhookService(ILogEventosBrutosRepositorio repositorio) : IWebhook
         return [.. registros.Select(registro => registro.Resumo())];
     }
 
+    public async Task<LogEventoBrutoResponse?> ObterPagamentoPorIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        LogEventosBrutos? registro = await repositorio.ObterPagamentoPorIdAsync(
+            id,
+            cancellationToken);
+
+        return registro?.Resumo();
+    }
+
     private static List<string> ValidarPayload(LogEventosBrutos registro)
     {
         List<string> erros = [];

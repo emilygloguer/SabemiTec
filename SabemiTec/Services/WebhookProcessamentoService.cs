@@ -47,6 +47,10 @@ public class WebhookProcessamentoService(ILogEventosBrutosRepositorio repositori
                 registro.StatusProcessamento = StatusProcessamento.Erro;
                 registro.MensagemErro = ex.Message;
             }
+            finally
+            {
+                registro.DataProcessamento = DateTime.UtcNow;
+            }
         }
 
         await repositorio.AtualizarProcessamentoEmLoteAsync(

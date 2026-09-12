@@ -16,6 +16,10 @@ public interface ILogEventosBrutosRepositorio
         ObterPagamentosAsync(
             CancellationToken cancellationToken = default);
 
+    Task<LogEventosBrutos?> ObterPagamentoPorIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
     Task<StatusDoContrato?> ObterStatusDoContratoAsync(
         string contratoId,
         CancellationToken cancellationToken = default);

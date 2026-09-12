@@ -9,4 +9,5 @@ public record LogEventoBrutoResponse(
     string? StatusRecebido,
     string StatusProcessamento,
     string? MensagemErro,
-    DateTime DataRecebimento);
+    DateTime DataRecebimento,
+    DateTime? DataProcessamento);

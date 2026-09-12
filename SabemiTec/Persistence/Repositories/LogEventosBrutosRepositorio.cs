@@ -48,6 +48,15 @@ public class LogEventosBrutosRepositorio(
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<LogEventosBrutos?> ObterPagamentoPorIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.LogsEventosBrutos
+            .AsNoTracking()
+            .SingleOrDefaultAsync(log => log.Id == id, cancellationToken);
+    }
+
     public async Task<StatusDoContrato?> ObterStatusDoContratoAsync(
         string contratoId,
         CancellationToken cancellationToken = default)
@@ -94,6 +103,10 @@ public class LogEventosBrutosRepositorio(
 
             dbContext.Entry(registro)
                 .Property(log => log.MensagemErro)
+                .IsModified = true;
+
+            dbContext.Entry(registro)
+                .Property(log => log.DataProcessamento)
                 .IsModified = true;
         }
     }

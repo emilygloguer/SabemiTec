@@ -30,7 +30,8 @@ public static class WebhookExtensions
             registro.StatusRecebido,
             registro.StatusProcessamento.ToString(),
             registro.MensagemErro,
-            registro.DataRecebimento);
+            registro.DataRecebimento,
+            registro.DataProcessamento);
 
     public static StatusDoContrato CriarOuAtualizarStatusDoContrato(
         this LogEventosBrutos registro,

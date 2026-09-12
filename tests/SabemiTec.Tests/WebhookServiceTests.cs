@@ -23,7 +23,8 @@ public class WebhookServiceTests
             PayloadBruto = "payload sensível",
             StatusProcessamento = StatusProcessamento.Erro,
             MensagemErro = "Falha no processamento",
-            DataRecebimento = new DateTime(2026, 9, 10, 12, 30, 0, DateTimeKind.Utc)
+            DataRecebimento = new DateTime(2026, 9, 10, 12, 30, 0, DateTimeKind.Utc),
+            DataProcessamento = new DateTime(2026, 9, 10, 12, 30, 2, DateTimeKind.Utc)
         };
 
         Mock<ILogEventosBrutosRepositorio> repositorio = new();
@@ -46,6 +47,7 @@ public class WebhookServiceTests
         Assert.Equal("Erro", pagamento.StatusProcessamento);
         Assert.Equal(registro.MensagemErro, pagamento.MensagemErro);
         Assert.Equal(registro.DataRecebimento, pagamento.DataRecebimento);
+        Assert.Equal(registro.DataProcessamento, pagamento.DataProcessamento);
     }
 
     [Fact]
@@ -62,5 +64,36 @@ public class WebhookServiceTests
             await service.ObterPagamentosAsync();
 
         Assert.Empty(resultado);
+    }
+
+    [Fact]
+    public async Task ObterPagamentoPorIdAsync_deve_retornar_o_resumo_do_registro_encontrado()
+    {
+        LogEventosBrutos registro = new()
+        {
+            Id = Guid.NewGuid(),
+            TransacaoId = "transacao-1",
+            ContratoId = "contrato-1",
+            Valor = 150.75m,
+            DataPagamento = new DateTime(2026, 9, 10),
+            StatusRecebido = "RECEBIDO",
+            StatusProcessamento = StatusProcessamento.Pendente,
+            DataRecebimento = new DateTime(2026, 9, 10, 12, 30, 0, DateTimeKind.Utc)
+        };
+
+        Mock<ILogEventosBrutosRepositorio> repositorio = new();
+        repositorio
+            .Setup(item => item.ObterPagamentoPorIdAsync(
+                registro.Id,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(registro);
+
+        WebhookService service = new(repositorio.Object);
+
+        LogEventoBrutoResponse? resultado = await service.ObterPagamentoPorIdAsync(registro.Id);
+
+        Assert.NotNull(resultado);
+        Assert.Equal(registro.Id, resultado.Id);
+        Assert.Equal("Pendente", resultado.StatusProcessamento);
     }
 }

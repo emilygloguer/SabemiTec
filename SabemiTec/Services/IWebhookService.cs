@@ -9,4 +9,8 @@ public interface IWebhookService
     Task<IReadOnlyList<LogEventoBrutoResponse>>
         ObterPagamentosAsync(
             CancellationToken cancellationToken = default);
+
+    Task<LogEventoBrutoResponse?> ObterPagamentoPorIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
 }

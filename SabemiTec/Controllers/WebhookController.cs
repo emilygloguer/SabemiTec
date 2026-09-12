@@ -43,5 +43,20 @@ public class WebhookController(IWebhookService webhookService) : ControllerBase
             return StatusCode(500, new { message = "Erro ao listar os pagamentos.", error = ex.Message });
         }
     }
-    //endpoint de busca com filtragem
+
+    [HttpGet("pagamentos/{id:guid}")]
+    public async Task<IActionResult> ObterPagamentoPorId(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            LogEventoBrutoResponse? pagamento = await webhookService
+                .ObterPagamentoPorIdAsync(id, cancellationToken);
+
+            return pagamento is null ? NotFound() : Ok(pagamento);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro ao obter o pagamento.", error = ex.Message });
+        }
+    }
 }

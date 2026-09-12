@@ -22,4 +22,5 @@ public class LogEventosBrutos
     public StatusProcessamento StatusProcessamento { get; set; }
     public string? MensagemErro { get; set; }
     public DateTime DataRecebimento { get; set; }
+    public DateTime? DataProcessamento { get; set; }
 }
