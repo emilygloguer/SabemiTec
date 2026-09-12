@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.page-container {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 2.5rem 1.5rem 4rem;
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .page-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+}
