@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SabemiTec.Contracts;
+using SabemiTec.Filters;
 using SabemiTec.Services;
 
 namespace SabemiTec.Controllers;
@@ -9,6 +10,7 @@ namespace SabemiTec.Controllers;
 public class WebhookController(IWebhookService webhookService) : ControllerBase
 {
     [HttpPost("pagamentos")]
+    [ApiKey]
     public async Task<IActionResult> PersistirWebhook([FromBody] PaymentWebhookRequest payload)
     {
         try
@@ -41,7 +43,5 @@ public class WebhookController(IWebhookService webhookService) : ControllerBase
             return StatusCode(500, new { message = "Erro ao listar os pagamentos.", error = ex.Message });
         }
     }
-
-    //apikey
     //endpoint de busca com filtragem
 }
