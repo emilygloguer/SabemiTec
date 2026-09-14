@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using SabemiTec.Background;
+using SabemiTec.Filters;
 using SabemiTec.Persistence;
 using SabemiTec.Persistence.Repositories;
 using SabemiTec.Services;
@@ -25,7 +27,20 @@ builder.Services.AddScoped<IWebhookProcessamentoService, WebhookProcessamentoSer
 builder.Services.AddHostedService<WebhookProcessamentoBackgroundService>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition(
+        ApiKeyOperationFilter.SecuritySchemeName,
+        new OpenApiSecurityScheme
+        {
+            Name = "X-Api-Key",
+            Type = SecuritySchemeType.ApiKey,
+            In = ParameterLocation.Header,
+            Description = "Informe a API key usada pelo endpoint."
+        });
+
+    options.OperationFilter<ApiKeyOperationFilter>();
+});
 
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
