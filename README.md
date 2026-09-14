@@ -1,6 +1,6 @@
 # 🐞 Sabemi Pay
 
-Aplicação desenvolvida para o desafio técnico da **Sabemi Tec**, simulando o recebimento, processamento e acompanhamento de notificações de pagamento enviadas por uma instituição financeira parceira.
+Aplicação desenvolvida para o desafio técnico, simulando o recebimento, processamento e acompanhamento de notificações de pagamento enviadas por uma instituição financeira parceira.
 
 ## Contexto
 
