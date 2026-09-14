@@ -8,33 +8,33 @@ A aplicação recebe webhooks de pagamento, registra os eventos recebidos e real
 
 O objetivo principal é garantir:
 
-* resposta rápida ao sistema parceiro;
-* processamento em background;
-* idempotência dos eventos;
-* persistência e rastreabilidade;
-* acompanhamento do processamento pelo frontend.
+- resposta rápida ao sistema parceiro;
+- processamento em background;
+- idempotência dos eventos;
+- persistência e rastreabilidade;
+- acompanhamento do processamento pelo frontend.
 
 ### Tecnologias
 
 **Backend**
 
-* .NET 10
-* ASP.NET Core
-* Entity Framework Core
-* PostgreSQL
-* BackgroundService
+- .NET 10
+- ASP.NET Core
+- Entity Framework Core
+- PostgreSQL
+- BackgroundService
 
 **Frontend**
 
-* Angular
-* TypeScript
-* RxJS
+- Angular
+- TypeScript
+- RxJS
 
 **Infraestrutura e testes**
 
-* Docker / Docker Compose
-* xUnit
-* Moq
+- Docker / Docker Compose
+- xUnit
+- Moq
 
 ---
 
@@ -44,9 +44,7 @@ O objetivo principal é garantir:
 
 O recebimento dos pagamentos é protegido por API Key através do header:
 
-```http
-X-Api-Key: sabemi-challenge-key
-```
+`X-Api-Key: sabemi-challenge-key`
 
 A chave utilizada possui finalidade exclusivamente demonstrativa.
 
@@ -61,26 +59,24 @@ Ao receber um evento válido, a API:
 3. retorna `202 Accepted`;
 4. processa o pagamento posteriormente através de um `BackgroundService`.
 
-```text
-Webhook
-   │
-   ▼
-Validação
-   │
-   ▼
-Persistência
-   │
-   ├──► 202 Accepted
-   │
-   ▼
-Pendente
-   │
-   ▼
-Background Service
-   │
-   ▼
-Sucesso / Erro
-```
+    Webhook
+       │
+       ▼
+    Validação
+       │
+       ▼
+    Persistência
+       │
+       ├──► 202 Accepted
+       │
+       ▼
+    Pendente
+       │
+       ▼
+    Background Service
+       │
+       ▼
+    Sucesso / Erro
 
 ---
 
@@ -96,11 +92,11 @@ A aplicação evita o processamento duplicado tanto por validação na aplicaç�
 
 A solução mantém:
 
-* o histórico dos eventos recebidos;
-* payload original;
-* status do processamento;
-* mensagens de erro;
-* estado atualizado do contrato.
+- o histórico dos eventos recebidos;
+- payload original;
+- status do processamento;
+- mensagens de erro;
+- estado atualizado do contrato.
 
 Essa separação permite preservar o histórico sem misturá-lo com o estado atual do contrato.
 
@@ -110,14 +106,64 @@ Essa separação permite preservar o histórico sem misturá-lo com o estado atu
 
 O frontend permite:
 
-* visualizar pagamentos;
-* filtrar por status;
-* pesquisar por contrato;
-* consultar detalhes da transação;
-* acompanhar pagamentos pendentes;
-* simular novos pagamentos.
+- visualizar pagamentos;
+- filtrar por status;
+- pesquisar por contrato;
+- consultar detalhes da transação;
+- acompanhar pagamentos pendentes;
+- simular novos pagamentos.
 
 Enquanto um evento estiver pendente, a tela realiza consultas periódicas até a conclusão do processamento.
+
+---
+
+## Execução local
+
+### Pré-requisitos
+
+- .NET SDK
+- Docker Desktop
+- Node.js / npm
+
+### Banco de dados
+
+Na raiz do repositório:
+
+`docker compose up -d`
+
+Aplicar as migrations:
+
+`dotnet ef database update --project SabemiTec`
+
+### Backend
+
+`dotnet run --project SabemiTec`
+
+Swagger:
+
+`https://localhost:<porta>/swagger`
+
+### Frontend
+
+`cd SabemiFront`
+
+`npm install`
+
+`npm start`
+
+### Testes
+
+Na raiz do repositório:
+
+`dotnet test`
+
+### Encerramento
+
+`docker compose down`
+
+Para remover também os volumes persistidos:
+
+`docker compose down -v`
 
 ---
 
@@ -129,7 +175,6 @@ Visão geral dos pagamentos recebidos e seus respectivos status.
 
 <img width="1600" height="764" alt="image" src="https://github.com/user-attachments/assets/5804d788-bbe0-4548-bffe-af60ac4a8c7d" />
 
-
 ---
 
 ### 02. Novo pagamento
@@ -138,7 +183,6 @@ Simulação do envio de um novo evento pela própria aplicação.
 
 <img width="1600" height="909" alt="image" src="https://github.com/user-attachments/assets/cad0dbcd-8bab-4797-8bfd-66da911b8fff" />
 
-
 ---
 
 ### 03. Pagamento em processamento
@@ -146,7 +190,6 @@ Simulação do envio de um novo evento pela própria aplicação.
 Evento recebido e aguardando processamento em background.
 
 <img width="1600" height="903" alt="image" src="https://github.com/user-attachments/assets/21ebe554-665e-47f2-abf0-6360b761efce" />
-
 
 ---
 
