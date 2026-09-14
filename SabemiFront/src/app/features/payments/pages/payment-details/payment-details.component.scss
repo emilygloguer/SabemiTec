@@ -1,0 +1,123 @@
+.back {
+  color: var(--color-primary);
+  display: inline-block;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-decoration: none;
+}
+.detail {
+  margin: 0 auto;
+  max-width: 46rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+.kicker {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.title-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+h1 {
+  font-size: clamp(1.8rem, 5vw, 2.7rem);
+  margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+}
+.amount {
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+.processing {
+  align-items: center;
+  background: var(--color-status-processing-bg);
+  border: 2px dashed var(--color-processing);
+  border-radius: var(--radius-control);
+  display: flex;
+  gap: 0.75rem;
+  margin: 2rem 0;
+  padding: 1rem;
+}
+.processing p {
+  color: var(--color-text-muted);
+  margin: 0.2rem 0 0;
+}
+dl {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 2rem 0;
+}
+dt {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.timeline {
+  border-top: 2px dashed var(--color-border);
+  padding-top: 1.5rem;
+}
+h2 {
+  font-size: 1.35rem;
+}
+.timeline-item {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.timeline-item > span {
+  align-items: center;
+  background: var(--color-cream-dark);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  display: inline-flex;
+  height: 1.8rem;
+  justify-content: center;
+  width: 1.8rem;
+}
+.timeline-item.complete > span {
+  background: var(--color-status-success-bg);
+  color: var(--color-success);
+}
+.timeline-item.failed > span {
+  background: var(--color-status-error-bg);
+  color: var(--color-error);
+}
+.timeline-item p {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0.15rem 0 0;
+}
+.error-message {
+  background: var(--color-status-error-bg);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-control);
+  color: var(--color-error);
+  margin: 1.5rem 0 0;
+  padding: 0.85rem;
+}
+.feedback {
+  display: grid;
+  gap: 1rem;
+  margin: 0 auto;
+  max-width: 46rem;
+  padding: 1.25rem;
+}
+.feedback p {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  dl {
+    grid-template-columns: 1fr;
+  }
+}

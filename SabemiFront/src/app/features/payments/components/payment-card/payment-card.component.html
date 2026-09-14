@@ -1,0 +1,34 @@
+<a
+  class="payment-card surface-card"
+  [routerLink]="['/payments', payment.id]"
+  [attr.aria-label]="'Ver detalhes do pagamento ' + payment.transacaoId"
+>
+  <div class="primary-info">
+    <strong>{{ payment.valor | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}</strong
+    ><span class="transaction-id">{{ payment.transacaoId || 'Sem transação' }}</span>
+  </div>
+  <div class="meta">
+    <span class="contract-id">{{ payment.contratoId || 'não informado' }}</span
+    ><span>{{ payment.dataPagamento | date: 'dd/MM/yyyy • HH:mm' : '-0300' : 'pt-BR' }}</span>
+  </div>
+  <div class="statuses">
+    <div class="status-group">
+      <span class="status-caption">Pagamento</span>
+      <span
+        class="received-status"
+        [class.received-success]="receivedStatus === 'Sucesso'"
+        [class.received-error]="receivedStatus === 'Erro'"
+      >
+        <span aria-hidden="true">{{
+          receivedStatus === 'Sucesso' ? '✓' : receivedStatus === 'Erro' ? '!' : '◌'
+        }}</span>
+        {{ receivedStatus || payment.statusRecebido || 'Não informado' }}
+      </span>
+    </div>
+    <div class="status-group">
+      <span class="status-caption">Processamento</span>
+      <app-payment-status [status]="payment.statusProcessamento" />
+    </div>
+  </div>
+  <span class="details-arrow" aria-hidden="true">→</span>
+</a>

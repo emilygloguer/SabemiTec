@@ -1,0 +1,23 @@
+.status {
+  align-items: center;
+  border-radius: var(--radius-badge);
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 700;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.status-pendente {
+  background: var(--color-status-processing-bg);
+  color: var(--color-processing);
+}
+.status-sucesso {
+  background: var(--color-status-success-bg);
+  color: var(--color-success);
+}
+.status-erro {
+  background: var(--color-status-error-bg);
+  color: var(--color-error);
+}

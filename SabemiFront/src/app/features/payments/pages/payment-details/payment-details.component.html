@@ -1,0 +1,85 @@
+<a class="back" routerLink="/payments">← Pagamentos</a>
+@if (loading()) {
+  <app-loading message="Carregando pagamento..." />
+} @else if (error()) {
+  <section class="feedback surface-card">
+    <p>{{ error() }}</p>
+    <a class="button button-secondary" routerLink="/payments">Voltar para pagamentos</a>
+  </section>
+} @else if (payment(); as payment) {
+  <section class="detail surface-card">
+    <p class="kicker">Pagamento</p>
+    <div class="title-row">
+      <div>
+        <h1>{{ payment.transacaoId || 'Sem transação' }}</h1>
+        <p class="amount">
+          {{ payment.valor | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+        </p>
+      </div>
+      <app-payment-status [status]="payment.statusProcessamento" />
+    </div>
+    @if (payment.statusProcessamento === 'Pendente') {
+      <section class="processing">
+        <app-ladybug-icon />
+        <div>
+          <strong>Estamos processando seu pagamento.</strong>
+          <p>Esta página será atualizada automaticamente.</p>
+        </div>
+      </section>
+    }
+    <dl>
+      <div>
+        <dt>Contrato</dt>
+        <dd>{{ payment.contratoId || 'Não informado' }}</dd>
+      </div>
+      <div>
+        <dt>Data do pagamento</dt>
+        <dd>{{ payment.dataPagamento | date: "dd/MM/yyyy 'às' HH:mm" : '-0300' : 'pt-BR' }}</dd>
+      </div>
+      <div>
+        <dt>Recebido em</dt>
+        <dd>
+          {{ payment.dataRecebimento | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' : 'pt-BR' }}
+        </dd>
+      </div>
+    </dl>
+    <section class="timeline">
+      <h2>Status</h2>
+      <div class="timeline-item complete">
+        <span>✓</span>
+        <div>
+          <strong>Pagamento recebido</strong>
+          <p>{{ payment.dataRecebimento | date: 'HH:mm:ss' : '-0300' : 'pt-BR' }}</p>
+        </div>
+      </div>
+      <div
+        class="timeline-item"
+        [class.complete]="payment.statusProcessamento !== 'Pendente'"
+        [class.failed]="payment.statusProcessamento === 'Erro'"
+      >
+        <span>{{
+          payment.statusProcessamento === 'Pendente'
+            ? '◌'
+            : payment.statusProcessamento === 'Erro'
+              ? '!'
+              : '✓'
+        }}</span>
+        <div>
+          <strong>{{ processingMessage }}</strong>
+          @if (payment.statusProcessamento === 'Pendente') {
+            <p>Atualizando automaticamente</p>
+          } @else if (payment.dataProcessamento) {
+            <p>
+              {{ payment.dataProcessamento | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' : 'pt-BR' }}
+            </p>
+          } @else {
+            <p>Horário de conclusão não disponível.</p>
+          }
+        </div>
+      </div>
+    </section>
+    @if (payment.mensagemErro) {
+      <p class="error-message" role="alert">{{ payment.mensagemErro }}</p>
+    }
+  </section>
+}

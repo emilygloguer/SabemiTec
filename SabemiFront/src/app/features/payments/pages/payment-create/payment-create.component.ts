@@ -1,5 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { CreatePaymentRequest } from '../../../../core/models/payment.model';
@@ -13,147 +18,8 @@ import {
 @Component({
   selector: 'app-payment-create',
   imports: [LadybugIconComponent, PaymentResultSelectComponent, ReactiveFormsModule, RouterLink],
-  template: `
-    <a class="back" routerLink="/payments">← Pagamentos</a>
-    <section class="form-card surface-card">
-      <div class="form-title">
-        <app-ladybug-icon />
-        <div>
-          <h1>Novo pagamento</h1>
-          <p>Envie um webhook de pagamento para acompanhamento.</p>
-        </div>
-      </div>
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <div class="field">
-          <label for="transactionId">ID da transação</label
-          ><input id="transactionId" formControlName="transactionId" autocomplete="off" /><small
-            >Identificador único da transação.</small
-          >
-        </div>
-        <div class="field">
-          <label for="contractId">ID do contrato</label
-          ><input id="contractId" formControlName="contractId" autocomplete="off" />
-        </div>
-        <div class="field">
-          <label for="amount">Valor</label>
-          <input
-            id="amount"
-            class="currency-input"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            [value]="amountDisplay()"
-            (focus)="selectAmount($event)"
-            (input)="formatAmount($event)"
-            aria-describedby="amount-help"
-          />
-          <small id="amount-help">Digite apenas os números do valor.</small>
-        </div>
-        <div class="field">
-          <label for="paymentDate">Data do pagamento</label
-          ><input id="paymentDate" type="datetime-local" formControlName="paymentDate" />
-        </div>
-        <div class="field">
-          <label>Status do pagamento</label>
-          <app-payment-result-select
-            ariaLabel="Status do pagamento"
-            [options]="statusOptions"
-            [value]="form.controls.status.value"
-            (valueChange)="form.controls.status.setValue($event)"
-          />
-        </div>
-        @if (error()) {
-          <p class="form-error" role="alert">{{ error() }}</p>
-        }
-        <div class="actions">
-          <a class="button button-secondary" routerLink="/payments">Cancelar</a
-          ><button
-            class="button button-primary"
-            type="submit"
-            [disabled]="form.invalid || amountInCents() === 0 || submitting()"
-          >
-            {{ submitting() ? 'Criando...' : 'Criar pagamento' }}
-          </button>
-        </div>
-      </form>
-    </section>
-  `,
-  styles: `
-    .back {
-      color: var(--color-primary);
-      display: inline-block;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      text-decoration: none;
-    }
-    .form-card {
-      margin: 0 auto;
-      max-width: 42rem;
-      padding: clamp(1.25rem, 4vw, 2.5rem);
-    }
-    .form-title {
-      align-items: center;
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      font-size: 2rem;
-      margin: 0 0 0.3rem;
-    }
-    .form-title p {
-      color: var(--color-text-muted);
-      margin-bottom: 0;
-    }
-    form {
-      display: grid;
-      gap: 1.15rem;
-    }
-    .field {
-      display: grid;
-      gap: 0.4rem;
-    }
-    label {
-      font-weight: 700;
-    }
-    input {
-      background: var(--color-surface);
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-control);
-      color: var(--color-text);
-      min-height: 2.8rem;
-      padding: 0.6rem 0.75rem;
-    }
-    .currency-input {
-      font-variant-numeric: tabular-nums;
-    }
-    input:focus,
-    select:focus {
-      border-color: var(--color-primary);
-      outline: 2px solid var(--color-focus-ring);
-    }
-    small {
-      color: var(--color-text-muted);
-    }
-    .actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: end;
-      margin-top: 0.5rem;
-    }
-    .form-error {
-      color: var(--color-error);
-      margin: 0;
-    }
-    @media (max-width: 500px) {
-      .actions {
-        flex-direction: column-reverse;
-      }
-      .actions .button {
-        width: 100%;
-      }
-    }
-  `,
+  templateUrl: './payment-create.component.html',
+  styleUrl: './payment-create.component.scss',
 })
 export class PaymentCreateComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
@@ -163,14 +29,25 @@ export class PaymentCreateComponent {
   readonly error = signal('');
   readonly amountInCents = signal(0);
   readonly amountDisplay = signal(this.formatCurrency(0));
+  private readonly currentDateTime = this.currentBrazilianDateTime();
+  readonly maxPaymentDateTime = `${this.currentDateTime.slice(0, 10)}T23:59`;
   readonly statusOptions: PaymentResultOption[] = [
     { value: 'Sucesso', label: 'Sucesso' },
     { value: 'Erro', label: 'Erro' },
   ];
+  private readonly paymentDateValidator: ValidatorFn = (control) => {
+    const selectedDate = control.value;
+    if (typeof selectedDate !== 'string' || selectedDate.length < 10) return null;
+
+    const selectedDay = selectedDate.slice(0, 10);
+    const today = this.currentDateTime.slice(0, 10);
+
+    return selectedDay > today ? { futureDate: true } : null;
+  };
   readonly form = this.formBuilder.group({
     transactionId: ['', Validators.required],
     contractId: ['', Validators.required],
-    paymentDate: [this.currentBrazilianDateTime(), Validators.required],
+    paymentDate: [this.currentDateTime, [Validators.required, this.paymentDateValidator]],
     status: ['', Validators.required],
   });
 

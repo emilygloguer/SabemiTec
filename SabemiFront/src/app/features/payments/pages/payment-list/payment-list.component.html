@@ -1,0 +1,67 @@
+<section class="page-heading">
+  <div>
+    <p class="kicker">Sabemi Pay</p>
+    <h1>Pagamentos</h1>
+    <p>Acompanhe seus pagamentos e processamentos.</p>
+  </div>
+</section>
+@if (loading()) {
+  <app-loading />
+} @else if (error()) {
+  <section class="feedback surface-card">
+    <p>{{ error() }}</p>
+    <button class="button button-secondary" (click)="loadPayments()">Tentar novamente</button>
+  </section>
+} @else {
+  <section class="summary-grid" aria-label="Resumo dos pagamentos">
+    <app-payment-summary label="Total" [value]="payments().length" /><app-payment-summary
+      label="Processando"
+      [value]="count('Pendente')"
+      variant="processing"
+    /><app-payment-summary
+      label="Concluídos"
+      [value]="count('Sucesso')"
+      variant="success"
+    /><app-payment-summary label="Falharam" [value]="count('Erro')" variant="error" />
+  </section>
+  <section class="filters-row" aria-label="Filtros de pagamentos">
+    <label class="search">
+      <span>Buscar por contrato</span>
+      <input
+        type="text"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        placeholder="ID do contrato"
+      />
+    </label>
+    <div class="status-filter">
+      <span>Status do pagamento</span>
+      <app-payment-result-select
+        ariaLabel="Filtrar por status do pagamento"
+        placeholder="Todos"
+        [options]="statusFilterOptions"
+        [value]="statusFilter()"
+        (valueChange)="statusFilter.set($event)"
+      />
+    </div>
+    <a class="button button-primary new-payment" routerLink="/payments/new">Novo pagamento</a>
+  </section>
+  @if (filteredPayments.length) {
+    <section class="payment-list" aria-label="Lista de pagamentos">
+      @for (payment of filteredPayments; track payment.id) {
+        <app-payment-card [payment]="payment" />
+      }
+    </section>
+  } @else {
+    <app-empty-state
+      [title]="
+        payments().length ? 'Nenhum resultado encontrado.' : 'Nenhum pagamento por aqui ainda.'
+      "
+      [description]="
+        payments().length
+          ? 'Ajuste o contrato ou o status selecionado.'
+          : 'Crie um novo pagamento para iniciar o acompanhamento.'
+      "
+    />
+  }
+}

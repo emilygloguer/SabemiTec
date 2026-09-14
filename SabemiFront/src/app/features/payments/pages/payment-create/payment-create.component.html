@@ -1,0 +1,71 @@
+<a class="back" routerLink="/payments">← Pagamentos</a>
+<section class="form-card surface-card">
+  <div class="form-title">
+    <app-ladybug-icon />
+    <div>
+      <h1>Novo pagamento</h1>
+      <p>Envie um webhook de pagamento para acompanhamento.</p>
+    </div>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="transactionId">ID da transação</label
+      ><input id="transactionId" formControlName="transactionId" autocomplete="off" /><small
+        >Identificador único da transação.</small
+      >
+    </div>
+    <div class="field">
+      <label for="contractId">ID do contrato</label
+      ><input id="contractId" formControlName="contractId" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="amount">Valor</label>
+      <input
+        id="amount"
+        class="currency-input"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        [value]="amountDisplay()"
+        (focus)="selectAmount($event)"
+        (input)="formatAmount($event)"
+        aria-describedby="amount-help"
+      />
+      <small id="amount-help">Digite apenas os números do valor.</small>
+    </div>
+    <div class="field">
+      <label for="paymentDate">Data do pagamento</label
+      ><input
+        id="paymentDate"
+        type="datetime-local"
+        formControlName="paymentDate"
+        [max]="maxPaymentDateTime"
+      />
+      @if (form.controls.paymentDate.hasError('futureDate')) {
+        <small class="form-error">A data não pode ser posterior a hoje.</small>
+      }
+    </div>
+    <div class="field">
+      <label>Status do pagamento</label>
+      <app-payment-result-select
+        ariaLabel="Status do pagamento"
+        [options]="statusOptions"
+        [value]="form.controls.status.value"
+        (valueChange)="form.controls.status.setValue($event)"
+      />
+    </div>
+    @if (error()) {
+      <p class="form-error" role="alert">{{ error() }}</p>
+    }
+    <div class="actions">
+      <a class="button button-secondary" routerLink="/payments">Cancelar</a
+      ><button
+        class="button button-primary"
+        type="submit"
+        [disabled]="form.invalid || amountInCents() === 0 || submitting()"
+      >
+        {{ submitting() ? 'Criando...' : 'Criar pagamento' }}
+      </button>
+    </div>
+  </form>
+</section>

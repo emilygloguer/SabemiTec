@@ -2,33 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-ladybug-icon',
-  template: `
-    <svg aria-hidden="true" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <path d="M18 25 9 18M46 25l9-7M16 43 6 49M48 43l10 6" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M25 16 20 9M39 16l5-7" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M10 51c8-8 12-13 15-17M54 51c-8-8-12-13-15-17" fill="none" stroke="var(--color-text)" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M32 19c-13 0-23 10-23 24 0 11 9 18 23 18s23-7 23-18c0-14-10-24-23-24Z" fill="var(--color-surface)" />
-      <path d="M30.5 28C19 26 11 34 11 43c0 10 9 16 19.5 16V28Z" fill="var(--color-primary)" />
-      <path d="M33.5 28C45 26 53 34 53 43c0 10-9 16-19.5 16V28Z" fill="var(--color-primary)" />
-      <path d="M32 11c-8 0-13 6-13 14 0 5 5 9 13 9s13-4 13-9c0-8-5-14-13-14Z" fill="var(--color-text)" />
-      <path d="M31.5 29v30" stroke="var(--color-text)" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M23 24c2-3 5-3 7 0M41 24c-2-3-5-3-7 0" fill="none" stroke="var(--color-surface)" stroke-width="2" stroke-linecap="round" />
-      <ellipse cx="20" cy="39" rx="3.8" ry="5" fill="var(--color-text)" transform="rotate(-25 20 39)" />
-      <ellipse cx="25" cy="51" rx="4.2" ry="3" fill="var(--color-text)" transform="rotate(30 25 51)" />
-      <ellipse cx="44" cy="39" rx="3.8" ry="5" fill="var(--color-text)" transform="rotate(25 44 39)" />
-      <ellipse cx="39" cy="51" rx="4.2" ry="3" fill="var(--color-text)" transform="rotate(-30 39 51)" />
-      <path d="M15 36c4-5 8-5 11-3-4 1-6 5-8 9-2-1-3-3-3-6ZM49 36c-4-5-8-5-11-3 4 1 6 5 8 9 2-1 3-3 3-6Z" fill="var(--color-status-error-bg)" opacity="0.8" />
-      <path d="M17 32c3-2 6-2 8-1-4 2-6 5-7 9-2-2-2-5-1-8Z" fill="var(--color-surface)" opacity="0.75" />
-    </svg>
-  `,
-  styles: `
-    :host {
-      display: inline-flex;
-    }
-    svg {
-      height: 2rem;
-      width: 2rem;
-    }
-  `,
+  templateUrl: './ladybug-icon.component.html',
+  styleUrl: './ladybug-icon.component.scss',
 })
 export class LadybugIconComponent {}
